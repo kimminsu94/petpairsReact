@@ -18,11 +18,12 @@ const storage = multer.diskStorage({
 });
 //`${uuid()}.png`
 
-const upload = multer({ storage: storage }).array("imageFile", 5);
+const upload = multer({ storage: storage }).array("image", 5);
 
 module.exports = {
   createPet: async (req, res) => {
     const { userId, petName, breed, species, age, introduce } = req.body;
+    console.log(req.cookies);
 
     if (!petName || !breed || !species || !age || !introduce) {
       return res.status(401).json({ message: "모든 정보를 기입해주세요." });
@@ -30,19 +31,6 @@ module.exports = {
 
     try {
       //펫을 이미 등록했었을 때
-
-      const [newPet, created] = await petModel.findOrCreate({
-        where: {
-          userId: userId,
-        },
-        defaults: {
-          petName: petName,
-          breed: breed,
-          species: species,
-          age: age,
-          introduce: introduce,
-        },
-      });
 
       if (!created) {
         return res.status(400).json({ message: "이미 펫을 등록하였습니다." });
@@ -68,8 +56,27 @@ module.exports = {
       //   petId: petId,
       //   fileName: req.file.filename,
       // });
+      // req.files.map()
+      // petPhotoModel.create({
+      //   fileName: req.files.filename,
+      // });
+      const files = [
+        {
+          id: 1,
+          petId: 1,
+          fileName: "e9587484-922b-4988-adca-3ba2c7691162.png",
+        },
+        {
+          id: 2,
+          petId: 1,
+          fileName: "e9587484-922b-4988-adca-3ba2c7691162.png",
+        },
+      ];
 
-      return res.status(200).json({ message: "사진이 저장되었습니다." });
+      // const findPhoto = petPhotoModel.findAll();
+      console.log(files);
+
+      return res.status(200).json({ data: files });
     });
   },
 
@@ -121,5 +128,40 @@ module.exports = {
 
   petLikeDelete: async (req, res) => {},
 
-  petPhotoView: async (req, res) => {},
+  otherPetPhotoView: async (req, res) => {
+    const token = req.headers.cookies["accessToken"];
+    const verifyToken = token.verify(token, "Tnlqkf");
+
+    const userId = verifyToken.user.id;
+
+    const petId = await petModel.findOne({
+      where: {
+        userId: userId,
+      },
+    });
+
+    const findOtherPhoto = await petPhotoModel.findAll();
+
+    const userFilterPhotp = findOtherPhoto.filter(
+      (photo) => photo.petId !== petId
+    );
+
+    return res.status(200).json({ data: userFilterPhotp });
+  },
+
+  petPhotoView: async (req, res) => {
+    const { petId } = req.body;
+
+    try {
+      const findPhoto = await petPhotoModel.findAll({
+        where: {
+          petId: petId,
+        },
+      });
+
+      return res.status(200).json({ data: findPhoto });
+    } catch (err) {
+      return res.status(404).json({ message: "잘못된 요청입니다." });
+    }
+  },
 };
