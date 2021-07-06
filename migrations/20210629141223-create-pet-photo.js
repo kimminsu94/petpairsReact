@@ -7,9 +7,13 @@ module.exports = {
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER,
+        onDelete: "CASCADE",
       },
       petId: {
         type: Sequelize.INTEGER,
+      },
+      petName: {
+        type: Sequelize.STRING,
       },
       fileName: {
         type: Sequelize.STRING,

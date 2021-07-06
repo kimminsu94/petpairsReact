@@ -1,11 +1,17 @@
-const { user: userModel, pet: petModel } = require("../models");
+const {
+  user: userModel,
+  pet: petModel,
+  petPhoto: petPhotoModel,
+  like: likeModel,
+  matching: matchingModel,
+} = require("../models");
 const jwt = require("jsonwebtoken");
 const passport = require("passport");
+const { petPhotoFileDelete } = require("./pet");
 const pet = require("./pet");
 
 module.exports = {
   signup: async (req, res) => {
-    console.log(req.body);
     const { name, email, password } = req.body;
 
     try {
@@ -34,7 +40,6 @@ module.exports = {
   },
 
   // login: async (req, res) => {
-  //   console.log(req.body);
   //   const { email, password } = req.body;
 
   //   if (!email) {
@@ -58,11 +63,9 @@ module.exports = {
   //         .json({ message: "잘못된 사용자 또는 잘못된 암호입니다." });
   //     }
 
-  //     console.log(user);
   //     delete user.password;
   //     return res.status(200).json({ data: user });
   //   } catch (err) {
-  //     console.log(err);
   //     return res
   //       .status(404)
   //       .json({ message: "잘못된 사용자 또는 잘못된 암호입니다." });
@@ -76,11 +79,10 @@ module.exports = {
   // },
 
   userOrPetEdit: async (req, res) => {
-    const { petId, name, email } = req.body;
-    const { petName, species, breed, age, introduce } = req.body.pet;
+    const { name, email } = req.body;
+    const { petId, petName, species, breed, age, introduce } = req.body.pet;
 
-    console.log(req.headers.cookie);
-    const token = req.headers.cookie.substring(12);
+    const token = req.cookies["accessToken"];
 
     const verifyToken = jwt.verify(token, "Tnlqkf");
 
@@ -109,56 +111,69 @@ module.exports = {
         }
       );
 
-      if (petId) {
-        await petModel.update(
-          {
-            petName: petName,
-            species: species,
-            breed: breed,
-            age: age,
-            introduce: introduce,
-          },
-          {
-            where: {
-              id: petId,
-            },
-          }
-        );
-      } else {
-        await petModel.create({
+      const [pet, created] = await petModel.findOrCreate({
+        where: {
           userId: verifyToken.id,
+        },
+        defaults: {
           petName: petName,
           breed: breed,
           species: species,
           age: age,
           introduce: introduce,
-        });
+        },
+      });
+
+      if (!created) {
+        await petModel.update(
+          {
+            petName: petName,
+            breed: breed,
+            species: species,
+            age: age,
+            introduce: introduce,
+          },
+          {
+            where: {
+              userId: verifyToken.id,
+            },
+          }
+        );
       }
 
-      const editUser = await userModel.findOne({
+      const editFindUser = await userModel.findOne({
         where: {
           id: verifyToken.id,
         },
-        include: [{ all: true }],
+        row: true,
       });
-      console.log(editUser.dataValues);
-      return res.status(200).json({ data: editUser.dataValues });
+      const editFindPet = await petModel.findOne({
+        where: {
+          userId: verifyToken.id,
+        },
+        row: true,
+      });
+
+      return res.status(200).json({ user: editFindUser, pet: editFindPet });
     } catch (err) {
+      console.log(err);
       return res.status(404).json({ message: "잘못된 요청입니다." });
     }
   },
 
   userDelete: async (req, res) => {
     const token = req.cookies["accessToken"];
-
-    const verifyToekn = token.verify(token, "Tnlqkf");
+    const verifyToekn = jwt.verify(token, "Tnlqkf");
 
     try {
       await userModel.destroy({
         where: {
-          id: id,
+          id: verifyToekn.id,
         },
       });
+
+      res.clearCookie("accessToken");
+      // res.setcookie("accessToken", "", time() - 3600);
       return res.status(200).json({ message: "탈퇴했습니다." });
     } catch (err) {
       return res.status(404).json({ message: "잘못된 요청입니다." });
@@ -166,8 +181,7 @@ module.exports = {
   },
 
   userInfo: async (req, res) => {
-    const token = req.headers.cookie.substring(12);
-
+    const token = req.cookies["accessToken"];
     const verifyToken = jwt.verify(token, "Tnlqkf");
 
     try {
@@ -175,16 +189,60 @@ module.exports = {
         where: {
           id: verifyToken.id,
         },
-        include: [{ all: true }],
+        raw: true,
       });
-      console.log(findUser);
-      return res.status(200).json({ data: findUser });
+      // console.log(findUser);
+
+      const findPet = await petModel.findOne({
+        where: {
+          userId: verifyToken.id,
+        },
+        raw: true,
+      });
+      console.log(
+        "--------------------------------------------------=--=--=------=-------"
+      );
+      console.log(findPet);
+      if (!findPet) {
+        return res.status(200).json({
+          data: {
+            user: findUser,
+            pet: findPet,
+            fileName: null,
+          },
+        });
+      }
+
+      const findPetPhoto = await petPhotoModel.findAll({
+        where: {
+          petId: findPet.id,
+        },
+        raw: true,
+      });
+      console.log(findPetPhoto);
+
+      // const findPet = await petModel.findOne({
+      //   where: {
+      //     userId: verifyToken.id,
+      //   },
+      // });
+      return res.status(200).json({
+        data: {
+          user: findUser,
+          pet: findPet,
+          fileName: findPetPhoto,
+        },
+      });
     } catch (err) {
+      console.log(err);
       return res.status(404).json({ message: "잘못된 요청입니다." });
     }
   },
 
   allFindPet: async (req, res) => {
+    const token = req.cookies["accessToken"];
+    const verifyToken = jwt.verify(token, "Tnlqkf");
+
     const findall = await petModel.findAll();
     return res.json({ findall });
   },

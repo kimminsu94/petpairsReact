@@ -51,6 +51,7 @@ user.hasOne(pet, {
 });
 pet.belongsTo(user, {
   foreignKey: "userId",
+  onDelete: "CASCADE",
 });
 
 //pet과 like 관계설정
@@ -59,6 +60,7 @@ pet.hasMany(like, {
 });
 like.belongsTo(pet, {
   foreignKey: "petId",
+  onDelete: "CASCADE",
 });
 
 //pet과 matching 관계설정
@@ -67,6 +69,7 @@ pet.hasMany(matching, {
 });
 matching.belongsTo(pet, {
   foreignKey: "petId",
+  onDelete: "CASCADE",
 });
 
 //pet과 userPhoto 관계설정
@@ -75,6 +78,7 @@ pet.hasMany(petPhoto, {
 });
 petPhoto.belongsTo(pet, {
   foreignKey: "petId",
+  onDelete: "CASCADE",
 });
 
 module.exports = db;

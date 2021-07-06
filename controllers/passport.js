@@ -3,7 +3,11 @@ const passportJWT = require("passport-jwt");
 const JWTStrategy = passportJWT.Strategy;
 const ExtractJWT = passportJWT.ExtractJwt;
 const LocalStrategy = require("passport-local").Strategy;
-let { user: userModel } = require("../models");
+let {
+  user: userModel,
+  pet: petModel,
+  petPhoto: petPhotoModel,
+} = require("../models");
 
 module.exports = () => {
   // Local Strategy

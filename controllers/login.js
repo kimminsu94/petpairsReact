@@ -15,7 +15,6 @@ exports.create = (req, res) => {
       }
       const accessToken = jwt.sign(user.toJSON(), "Tnlqkf");
       res.cookie("accessToken", accessToken, { httpOnly: true });
-      console.log(user.dataValues);
       return res.json({ data: user.dataValues, accessToken: accessToken });
     });
   })(req, res);
