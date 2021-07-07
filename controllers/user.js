@@ -144,6 +144,7 @@ module.exports = {
   userInfo: async (req, res) => {
     const token = req.cookies["accessToken"];
     const verifyToken = jwt.verify(token, "Tnlqkf");
+    console.log(token);
 
     try {
       const findUser = await userModel.findOne({
@@ -152,7 +153,6 @@ module.exports = {
         },
         raw: true,
       });
-      // console.log(findUser);
 
       const findPet = await petModel.findOne({
         where: {

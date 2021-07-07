@@ -3,6 +3,9 @@ const passportJWT = require("passport-jwt");
 const JWTStrategy = passportJWT.Strategy;
 const ExtractJWT = passportJWT.ExtractJwt;
 const LocalStrategy = require("passport-local").Strategy;
+const dotenv = require("dotenv");
+dotenv.config();
+
 let {
   user: userModel,
   pet: petModel,
@@ -27,7 +30,9 @@ module.exports = () => {
               message: "Incorrect email or password.",
             });
           }
-          return done(null, user, { message: "Logged In Successfully" });
+          return done(null, user, {
+            message: "Logged In Successfully",
+          });
         } catch (err) {
           console.log(err);
         }
@@ -66,7 +71,7 @@ module.exports = () => {
     new JWTStrategy(
       {
         jwtFromRequest: cookieExtractor,
-        secretOrKey: "Tnlqkf",
+        secretOrKey: process.env.ACCESS_SECRET,
       },
       (jwtPayload, done) => {
         return userModel

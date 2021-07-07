@@ -24,6 +24,9 @@ app.use(
     origin: true,
     Methods: ["POST", "GET", "OPTIONS"],
     credentials: true,
+    // headers: {
+    //   "Content-Type": "application/json",
+    // },
   })
 );
 

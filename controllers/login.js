@@ -1,5 +1,7 @@
 const jwt = require("jsonwebtoken");
 const passport = require("passport");
+const dotenv = require("dotenv");
+dotenv.config();
 
 exports.create = (req, res) => {
   passport.authenticate("local", { session: false }, (err, user) => {
@@ -13,7 +15,7 @@ exports.create = (req, res) => {
       if (err) {
         res.send(err);
       }
-      const accessToken = jwt.sign(user.toJSON(), "Tnlqkf");
+      const accessToken = jwt.sign(user.toJSON(), process.env.ACCESS_SECRET);
       res.cookie("accessToken", accessToken, { httpOnly: true });
       return res.json({ data: user.dataValues, accessToken: accessToken });
     });
