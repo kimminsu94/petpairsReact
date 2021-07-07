@@ -39,45 +39,6 @@ module.exports = {
     }
   },
 
-  // login: async (req, res) => {
-  //   const { email, password } = req.body;
-
-  //   if (!email) {
-  //     return res.status(400).json({ message: "이메일이 존재하지 않습니다." });
-  //   } else if (!password) {
-  //     return res.status(400).json({ message: "잘못된 패스워드입니다." });
-  //   }
-
-  //   try {
-  //     const user = await userModel.findOne({
-  //       where: {
-  //         email: email,
-  //         password: password,
-  //       },
-  //       include: [{ all: true }],
-  //     });
-
-  //     if (!user) {
-  //       return res
-  //         .status(400)
-  //         .json({ message: "잘못된 사용자 또는 잘못된 암호입니다." });
-  //     }
-
-  //     delete user.password;
-  //     return res.status(200).json({ data: user });
-  //   } catch (err) {
-  //     return res
-  //       .status(404)
-  //       .json({ message: "잘못된 사용자 또는 잘못된 암호입니다." });
-  //   }
-  // },
-
-  // signout: async (req, res) => {
-  //   const accessToken = req.cookies["accessToken"];
-
-  //   const verifyToken = jwt.verify;
-  // },
-
   userOrPetEdit: async (req, res) => {
     const { name, email } = req.body;
     const { petId, petName, species, breed, age, introduce } = req.body.pet;
@@ -264,5 +225,11 @@ module.exports = {
         return res.json({ user, token });
       });
     });
+  },
+
+  logout: (req, res) => {
+    res.clearCookie("token");
+    res.clearCookie("accessToken");
+    res.redirect("/");
   },
 };

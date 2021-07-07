@@ -8,7 +8,7 @@ router.post("/userOrPetEdit", controllers.userOrPetEdit);
 router.get("/userInfo", controllers.userInfo);
 router.get("/allFindPet", controllers.allFindPet);
 router.post("/userDelete", controllers.userDelete);
-// router.delete("/signout)", controllers.signout);
+router.get("/logout", controllers.logout);
 router.post("/login", auth.create);
 
 module.exports = router;

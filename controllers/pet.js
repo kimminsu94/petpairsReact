@@ -99,6 +99,7 @@ module.exports = {
     const { otherPetId } = req.body;
 
     try {
+      //본인의 펫
       const findPetId = await petModel.findOne({
         where: {
           userId: verifyToken.id,
@@ -106,6 +107,7 @@ module.exports = {
         raw: true,
       });
 
+      //petId와 liked 둘 다 존재하지 않으면 like 생성
       const [like, created] = await likeModel.findOrCreate({
         where: {
           petId: findPetId.id,
@@ -118,6 +120,7 @@ module.exports = {
         return res.status(400).json({ message: "이미 like를 누른 pet입니다." });
       }
 
+      //상대 펫 찾기
       const otherPetLike = await likeModel.findOne({
         where: {
           petId: otherPetId,
@@ -125,10 +128,37 @@ module.exports = {
         },
       });
 
+      // like등록 후 매칭된 펫이 없을때
       if (!otherPetLike) {
         return res.status(200).json({ message: "좋아요를 등록했습니다." });
       }
 
+      // 유저의 펫이 이미 매칭된 펫이 존재할때
+      const matchingMyPetFind = await matchingModel.findOne({
+        where: {
+          petId: findPetId.id,
+        },
+      });
+
+      // 상대펫이 이미 매칭된 펫이 존재할때
+      const matchingOtherPetFind = await matchingModel.findOne({
+        where: {
+          petId: otherPetId,
+        },
+      });
+
+      //유저의 펫이 이미 매칭된 펫이 존재할 경우 또는 상대펫이 이미 존재할경우
+      if (matchingMyPetFind) {
+        return res
+          .status(200)
+          .json({ message: "이미 매칭된 상대펫이 존재합니다." });
+      } else if (matchingOtherPetFind) {
+        return res
+          .status(200)
+          .json({ message: "상대펫이 이미 매칭되었습니다." });
+      }
+
+      //매칭db에 유저 정보 기입
       const [matchedMyPet, createdMyPetMatching] =
         await matchingModel.findOrCreate({
           where: {
@@ -139,6 +169,7 @@ module.exports = {
           },
         });
 
+      //매칭db에 상대정보 기입
       const [matchedOtherPet, createdOtherPetMatching] =
         await matchingModel.findOrCreate({
           where: {
@@ -149,16 +180,12 @@ module.exports = {
           },
         });
 
+      //상대 펫의 사진 가져오기
       const otherPetFileName = await petPhotoModel.findAll({
         where: {
           petId: matchedOtherPet.id,
         },
       });
-      // {
-      //   message: "매칭이 완료되었습니다.",
-      //   myPetMatching: matchedMyPet,
-      //   otherPetMatching: matchedOtherPet,
-      // }
 
       return res.status(200).json({
         data: {
