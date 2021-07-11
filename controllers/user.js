@@ -7,8 +7,8 @@ const {
 } = require("../models");
 const jwt = require("jsonwebtoken");
 const passport = require("passport");
-const { petPhotoFileDelete } = require("./pet");
-const pet = require("./pet");
+const dotenv = require("dotenv");
+dotenv.config();
 
 module.exports = {
   signup: async (req, res) => {
@@ -45,7 +45,7 @@ module.exports = {
 
     const token = req.cookies["accessToken"];
 
-    const verifyToken = jwt.verify(token, "Tnlqkf");
+    const verifyToken = jwt.verify(token, process.env.ACCESS_SECRET);
 
     if (
       !name ||
@@ -124,7 +124,7 @@ module.exports = {
 
   userDelete: async (req, res) => {
     const token = req.cookies["accessToken"];
-    const verifyToekn = jwt.verify(token, "Tnlqkf");
+    const verifyToekn = jwt.verify(token, process.env.ACCESS_SECRET);
 
     try {
       await userModel.destroy({
@@ -143,7 +143,7 @@ module.exports = {
 
   userInfo: async (req, res) => {
     const token = req.cookies["accessToken"];
-    const verifyToken = jwt.verify(token, "Tnlqkf");
+    const verifyToken = jwt.verify(token, process.env.ACCESS_SECRET);
     console.log(token);
 
     try {
@@ -202,7 +202,7 @@ module.exports = {
 
   allFindPet: async (req, res) => {
     const token = req.cookies["accessToken"];
-    const verifyToken = jwt.verify(token, "Tnlqkf");
+    const verifyToken = jwt.verify(token, process.env.ACCESS_SECRET);
 
     const findall = await petModel.findAll();
     return res.json({ findall });
@@ -221,7 +221,9 @@ module.exports = {
           res.send(err);
         }
         // jwt.sign('token내용', 'JWT secretkey')
-        const token = jwt.sign(user, "Tnlqkf", { expiresIn: "30d" });
+        const token = jwt.sign(user, process.env.ACCESS_SECRET, {
+          expiresIn: "30d",
+        });
         return res.json({ user, token });
       });
     });

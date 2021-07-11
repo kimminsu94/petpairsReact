@@ -8,6 +8,8 @@ const {
   petPhoto: petPhotoModel,
   matching: matchingModel,
 } = require("../models");
+const dotenv = require("dotenv");
+dotenv.config();
 const multer = require("multer");
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -48,7 +50,7 @@ module.exports = {
 
   updatePetPhotoFile: async (req, res) => {
     const token = req.cookies["accessToken"];
-    const verifyToken = jwt.verify(token, "Tnlqkf");
+    const verifyToken = jwt.verify(token, process.env.ACCESS_SECRET);
 
     const findPet = await petModel.findOne({
       where: {
@@ -95,7 +97,7 @@ module.exports = {
 
   petLike: async (req, res) => {
     const token = req.cookies["accessToken"];
-    const verifyToken = jwt.verify(token, "Tnlqkf");
+    const verifyToken = jwt.verify(token, process.env.ACCESS_SECRET);
     const { otherPetId } = req.body;
 
     try {
@@ -197,8 +199,8 @@ module.exports = {
         },
       });
     } catch (err) {
-      // console.log(err);
-      return res.status(200).json({ message: "잘못된 요청입니다." });
+      console.log(err);
+      return res.status(404).json({ message: "잘못된 요청입니다." });
     }
   },
 
@@ -206,7 +208,7 @@ module.exports = {
 
   otherPetPhotoView: async (req, res) => {
     const token = req.cookies["accessToken"];
-    const verifyToken = jwt.verify(token, "Tnlqkf");
+    const verifyToken = jwt.verify(token, process.env.ACCESS_SECRET);
     try {
       const petId = await petModel.findOne({
         where: {

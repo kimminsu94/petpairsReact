@@ -1,0 +1,15 @@
+{
+  "public": true,
+  "version": 1,
+  "builds": [{ "src": "src/app.js", "use": "@now/node-server" }],
+  "routes": [
+    {
+      "src": "/webscrap",
+      "dest": "/src/app.js",
+      "methods": ["POST", "OPTIONS"],
+      "headers": {
+        "Access-Control-Allow-Origin": "*"
+      }
+    }
+  ]
+}
