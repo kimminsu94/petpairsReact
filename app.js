@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express();
 const cors = require("cors");
+const https = require("https");
 
 const cookieParser = require("cookie-parser");
 
@@ -38,6 +39,14 @@ app.use("/pet", petRouter);
 
 app.use("/pet", express.static("uploads/"));
 
-app.listen(port, () => {
-  console.log(`Example app listening at http://localhost:${port}`);
-});
+https
+  .createServer(
+    {
+      key: fs.readFileSync(__dirname + "/key.pem", "utf-8"),
+      cert: fs.readFileSync(__dirname + "/cert.pem", "utf-8"),
+    },
+    app.use("/", (req, res) => {
+      res.send("Congrats! You made https server now :)");
+    })
+  )
+  .listen(port);
