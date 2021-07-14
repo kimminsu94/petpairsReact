@@ -1,7 +1,7 @@
 const express = require("express");
 const app = express();
 const cors = require("cors");
-const https = require("https");
+const http = require("http");
 
 const cookieParser = require("cookie-parser");
 
@@ -14,7 +14,7 @@ app.use(express.urlencoded({ extended: false }));
 
 app.use(cookieParser());
 app.use(express.json());
-const port = 4000;
+const port = 8080;
 
 app.get("/", (req, res) => {
   res.send("hello world");
@@ -39,14 +39,6 @@ app.use("/pet", petRouter);
 
 app.use("/pet", express.static("uploads/"));
 
-https
-  .createServer(
-    {
-      key: fs.readFileSync(__dirname + "/key.pem", "utf-8"),
-      cert: fs.readFileSync(__dirname + "/cert.pem", "utf-8"),
-    },
-    app.use("/", (req, res) => {
-      res.send("Congrats! You made https server now :)");
-    })
-  )
-  .listen(port);
+http.createServer(app).listen(port, () => {
+  console.log(`Example app listening at http://localhost:${port}`);
+});
