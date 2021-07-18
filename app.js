@@ -12,11 +12,11 @@ app.use(cookieParser());
 
 app.use(
   cors({
-    origin: "*",
+    Origin: "*",
     Methods: ["POST", "GET", "OPTIONS"],
-    credentials: true,
-    header: "*",
-    optionsSuccessStatus: 200,
+    Credentials: true,
+    Header: "*",
+    OptionsSuccessStatus: 200,
   })
 );
 
