@@ -16,7 +16,7 @@ app.use(
     Methods: ["POST", "GET", "OPTIONS"],
     credentials: true,
     preflightContinue: false,
-    header: "*",
+    header: ["content-type"],
     optionsSuccessStatus: 200,
   })
 );
