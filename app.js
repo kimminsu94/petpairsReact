@@ -12,11 +12,11 @@ app.use(cookieParser());
 
 app.use(
   cors({
-    Origin: "*",
+    origin: ["https://https://petpairs-client.vercel.app/"],
     Methods: ["POST", "GET", "OPTIONS"],
-    Credentials: true,
-    Header: "*",
-    OptionsSuccessStatus: 200,
+    credentials: true,
+    header: "*",
+    optionsSuccessStatus: 200,
   })
 );
 
