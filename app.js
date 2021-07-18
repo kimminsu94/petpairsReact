@@ -15,6 +15,7 @@ app.use(
     origin: ["https://petpairs-client.vercel.app/"],
     Methods: ["POST", "GET", "OPTIONS"],
     credentials: true,
+    preflightContinue: false,
     header: "*",
     optionsSuccessStatus: 200,
   })
