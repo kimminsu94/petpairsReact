@@ -18,15 +18,15 @@ const cors_options = {
   optionsSuccessStatus: 200,
 };
 
-// app.use(
-//   cors({
-//     origin: "https://petpairs-client.vercel.app/",
-//     Methods: ["POST", "GET", "OPTIONS"],
-//     credentials: true,
-//     header: "*",
-//     optionsSuccessStatus: 200,
-//   })
-// );
+app.use(
+  cors({
+    origin: "https://petpairs-client.vercel.app/",
+    Methods: ["POST", "GET", "OPTIONS"],
+    credentials: true,
+    header: "*",
+    optionsSuccessStatus: 200,
+  })
+);
 
 const passport = require("passport");
 const passportConfig = require("./controllers/passport");
@@ -43,7 +43,7 @@ const userRouter = require("./routes/user");
 app.use("/user", cors(cors_options), userRouter);
 
 const petRouter = require("./routes/pet");
-app.use("/pet", petRouter);
+app.use("/pet", cors(cors_options), petRouter);
 
 app.use("/pet", express.static("uploads/"));
 
