@@ -10,14 +10,6 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cookieParser());
 
-const cors_options = {
-  origin: "https://petpairs-client.vercel.app/",
-  Methods: ["POST", "GET", "OPTIONS"],
-  credentials: true,
-  header: "*",
-  optionsSuccessStatus: 200,
-};
-
 app.use(
   cors({
     origin: "https://petpairs-client.vercel.app/",
@@ -40,10 +32,10 @@ app.get("/", (req, res) => {
 });
 
 const userRouter = require("./routes/user");
-app.use("/user", cors(cors_options), userRouter);
+app.use("/user", userRouter);
 
 const petRouter = require("./routes/pet");
-app.use("/pet", cors(cors_options), petRouter);
+app.use("/pet", petRouter);
 
 app.use("/pet", express.static("uploads/"));
 
