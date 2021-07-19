@@ -10,16 +10,23 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cookieParser());
 
-app.use(
-  cors({
-    origin: ["https://petpairs-client.vercel.app/"],
-    Methods: ["POST", "GET", "OPTIONS"],
-    credentials: true,
-    preflightContinue: false,
-    header: ["content-type"],
-    optionsSuccessStatus: 200,
-  })
-);
+const cors_options = {
+  origin: "https://petpairs-client.vercel.app/",
+  Methods: ["POST", "GET", "OPTIONS"],
+  credentials: true,
+  header: "*",
+  optionsSuccessStatus: 200,
+};
+
+// app.use(
+//   cors({
+//     origin: "https://petpairs-client.vercel.app/",
+//     Methods: ["POST", "GET", "OPTIONS"],
+//     credentials: true,
+//     header: "*",
+//     optionsSuccessStatus: 200,
+//   })
+// );
 
 const passport = require("passport");
 const passportConfig = require("./controllers/passport");
@@ -33,7 +40,7 @@ app.get("/", (req, res) => {
 });
 
 const userRouter = require("./routes/user");
-app.use("/user", userRouter);
+app.use("/user", cors(cors_options), userRouter);
 
 const petRouter = require("./routes/pet");
 app.use("/pet", petRouter);
