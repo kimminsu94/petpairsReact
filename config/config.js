@@ -10,6 +10,7 @@ const config = {
     port: process.env.DATABASE_PORT,
     dialect: "mysql",
     logging: false,
+    ssl: true,
   },
   test: {
     host: process.env.DATABASE_HOST,
@@ -19,6 +20,7 @@ const config = {
     port: process.env.DATABASE_PORT,
     dialect: "mysql",
     logging: false,
+    ssl: true,
   },
   production: {
     host: process.env.DATABASE_HOST,
@@ -28,6 +30,7 @@ const config = {
     port: process.env.DATABASE_PORT,
     dialect: "mysql",
     logging: false,
+    ssl: true,
   },
 };
 
